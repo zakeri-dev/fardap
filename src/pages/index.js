@@ -1,11 +1,14 @@
 import { Inter } from "next/font/google";
-import { useEffect, useState } from "react";
-import axios from 'axios'
+import { useEffect, useState, useRef } from "react";
+import axios from "axios";
 import { getRandomAlphabet } from "../utils/helper";
+import WatermarkedImage from "./WatermarkedImage";
+// import watermark from "watermarkjs";
 
 export default function Home() {
   const [logo, setLogo] = useState([]);
   const [blackWight, setBlackWight] = useState(false);
+  const [watermarkText, setWatermarkText] = useState("fardap");
 
   const fetchLogo = async () => {
     let randomChar = getRandomAlphabet();
@@ -29,19 +32,38 @@ export default function Home() {
       });
   };
 
+  // const applyWatermark = () => {};
+  const canvasRef = useRef(null);
+
   useEffect(() => {
     fetchLogo();
   }, []);
+  console.log(watermarkText)
 
   return (
     <main className="flex flex-col min-h-screen items-center justify-center gap-3">
-      <img src={logo?.image} alt="" className={`w-80 ${blackWight? 'grayscale' : null}`} />
+      <WatermarkedImage
+        imageUrl={logo?.image}
+        watermarkText={watermarkText}
+        blackWight={blackWight}
+      />
+
       <button className="px-3 py-1 bg-cyan-500 rounded-md" onClick={fetchLogo}>
         reload
       </button>
-      <button className="px-3 py-1 bg-cyan-500 rounded-md" onClick={()=>setBlackWight(!blackWight)}>
+      <button
+        className="px-3 py-1 bg-cyan-500 rounded-md"
+        onClick={() => setBlackWight(!blackWight)}
+      >
         Blak & Wight
       </button>
+      <input
+        name="Watermark"
+        type="text"
+        onChange={(e) => setWatermarkText(e.target.value == '' ? 'fardap' : e.target.value)}
+        placeholder="WatermarkText"
+        className="p-1 border border-2 rounded-md "
+      />
     </main>
   );
 }
